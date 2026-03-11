@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>公司點餐</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+
+body{
+background:linear-gradient(135deg,#eef2ff,#fdf4ff,#ecfeff);
+min-height:100vh;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+}
+
+.page-title{
+font-weight:800;
+font-size:34px;
+letter-spacing:-0.5px;
+}
+
+.store-name{
+font-size:18px;
+color:#6366f1;
+font-weight:600;
+}
+
+.card{
+border:none;
+border-radius:22px;
+padding:30px;
+backdrop-filter:blur(12px);
+background:rgba(255,255,255,0.8);
+box-shadow:0 20px 60px rgba(0,0,0,0.08);
+}
+
+.form-control,.form-select{
+height:60px;
+border-radius:14px;
+font-size:16px;
+border:1px solid #e5e7eb;
+}
+
+.form-control:focus{
+border-color:#6366f1;
+box-shadow:0 0 0 3px rgba(99,102,241,0.15);
+}
+
+.btn-order{
+height:60px;
+font-size:18px;
+font-weight:600;
+border-radius:14px;
+background:linear-gradient(135deg,#6366f1,#8b5cf6);
+border:none;
+}
+
+.btn-order:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 20px rgba(99,102,241,0.25);
+}
+
+.order-group{
+margin-bottom:25px;
+}
+
+.dept-title{
+font-weight:700;
+color:#6366f1;
+margin-bottom:8px;
+}
+
+.order-item{
+padding:12px 0;
+border-bottom:1px solid #f1f1f1;
+}
+
+.order-main{
+font-size:16px;
+}
+
+.order-note{
+font-size:14px;
+color:#a855f7;
+}
+
+.summary{
+font-size:18px;
+font-weight:600;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container py-5">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-7">
+
+<div class="text-center mb-4">
+
+<div class="page-title">
+今日訂餐
+</div>
+
+<div class="store-name">
+五十嵐
+</div>
+
+</div>
+
+
+<!-- 訂餐 -->
+
+<div class="card mb-4">
+
+<div class="row g-3">
+
+<div class="col-md-6">
+<select id="department" class="form-select">
+<option>行銷部</option>
+<option>工程部</option>
+<option>行政部</option>
+</select>
+</div>
+
+<div class="col-md-6">
+<input id="name" class="form-control" placeholder="姓名">
+</div>
+
+<div class="col-md-6">
+<input id="item" class="form-control" placeholder="品項">
+</div>
+
+<div class="col-md-6">
+<input id="price" class="form-control" placeholder="價格">
+</div>
+
+<div class="col-12">
+<input id="note" class="form-control" placeholder="備註（例如：少冰 / 無糖）">
+</div>
+
+<div class="col-12">
+
+<button onclick="addOrder()" class="btn btn-order w-100">
+
+<i class="fa-solid fa-plus"></i>
+送出訂單
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- 訂單 -->
+
+<div class="card">
+
+<h4 class="mb-4">
+<i class="fa-solid fa-clipboard-list"></i>
+今日訂單
+</h4>
+
+<div id="orders"></div>
+
+<hr>
+
+<div class="d-flex justify-content-between summary">
+
+<div>
+總金額：<span id="total">0</span>
+</div>
+
+<div>
+未付款：<span id="unpaid">0</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let orders=[]
+
+function addOrder(){
+
+let department=document.getElementById("department").value
+let name=document.getElementById("name").value
+let item=document.getElementById("item").value
+let price=parseInt(document.getElementById("price").value)||0
+let note=document.getElementById("note").value
+
+if(!name||!item){
+alert("請填寫姓名與品項")
+return
+}
+
+orders.push({
+department,
+name,
+item,
+price,
+note,
+paid:false
+})
+
+renderOrders()
+
+}
+
+function renderOrders(){
+
+let grouped={}
+let total=0
+let unpaid=0
+
+orders.forEach(o=>{
+
+if(!grouped[o.department]){
+grouped[o.department]=[]
+}
+
+grouped[o.department].push(o)
+
+total+=o.price
+
+if(!o.paid){
+unpaid+=o.price
+}
+
+})
+
+let html=""
+
+for(let dept in grouped){
+
+html+=`<div class="order-group">`
+
+html+=`<div class="dept-title">${dept}</div>`
+
+grouped[dept].forEach(o=>{
+
+html+=`
+
+<div class="order-item">
+
+<div class="order-main">
+
+<strong>${o.name}</strong>
+${o.item}
+<span class="text-muted">$${o.price}</span>
+
+</div>
+
+${o.note?`<div class="order-note">備註：${o.note}</div>`:""}
+
+</div>
+
+`
+
+})
+
+html+=`</div>`
+
+}
+
+document.getElementById("orders").innerHTML=html
+
+document.getElementById("total").innerText=total
+document.getElementById("unpaid").innerText=unpaid
+
+}
+
+</script>
+
+</body>
+</html>
