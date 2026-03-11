@@ -203,29 +203,34 @@ font-weight:600;
 
 let orders=[]
 
-function addOrder(){
+async function addOrder(){
 
 let department=document.getElementById("department").value
 let name=document.getElementById("name").value
 let item=document.getElementById("item").value
-let price=parseInt(document.getElementById("price").value)||0
+let price=document.getElementById("price").value
 let note=document.getElementById("note").value
 
-if(!name||!item){
+if(!name || !item){
 alert("請填寫姓名與品項")
 return
 }
 
-orders.push({
+await fetch("https://script.google.com/macros/s/AKfycbw_Y40xtU-5YlUopEMlZZucfZToq0b8ZVj-vAIV-rpGRdZPI7qpAsSDnvHgMtdDc5PFIg/exec",{
+
+method:"POST",
+
+body:JSON.stringify({
 department,
 name,
 item,
 price,
-note,
-paid:false
+note
 })
 
-renderOrders()
+})
+
+alert("訂單已送出")
 
 }
 
