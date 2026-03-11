@@ -296,7 +296,17 @@ document.getElementById("total").innerText=total
 document.getElementById("unpaid").innerText=unpaid
 
 }
+async function loadOrders(){
 
+let res = await fetch("https://script.google.com/macros/s/AKfycbw_Y40xtU-5YlUopEMlZZucfZToq0b8ZVj-vAIV-rpGRdZPI7qpAsSDnvHgMtdDc5PFIg/exec")
+
+orders = await res.json()
+
+renderOrders()
+
+}
+
+loadOrders()
 </script>
 
 </body>
